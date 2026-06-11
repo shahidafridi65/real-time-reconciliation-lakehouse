@@ -5,3 +5,4 @@ kafka-python==2.2.15
 fastapi==0.115.13
 uvicorn==0.34.3
 python-dotenv==1.1.0
+boto3==1.38.41
