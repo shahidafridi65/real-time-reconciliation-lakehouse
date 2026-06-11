@@ -1,3 +1,5 @@
+import argparse
+import logging
 import random
 import time
 from datetime import datetime, timezone
@@ -5,7 +7,8 @@ from datetime import datetime, timezone
 from config.settings import KAFKA_SERVER_LOGS_TOPIC
 from src.utils.kafka_client import build_text_producer
 
-producer = build_text_producer()
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger("server_log_producer")
 
 METHODS = ["GET", "POST", "PUT"]
 ENDPOINTS = ["/home", "/search", "/product", "/cart", "/checkout"]
@@ -25,12 +28,33 @@ def generate_log_line():
     return f"{ts} {ip} {service} {method} {endpoint} {status} {latency}ms"
 
 
-if __name__ == "__main__":
-    print(f"Producing server logs to topic: {KAFKA_SERVER_LOGS_TOPIC}")
+def parse_args():
+    parser = argparse.ArgumentParser(description="Generate synthetic server log lines into Kafka")
+    parser.add_argument("--interval", type=float, default=1.0, help="Seconds between log lines")
+    parser.add_argument("--max-events", type=int, default=None, help="Stop after this many log lines")
+    return parser.parse_args()
 
-    while True:
-        log_line = generate_log_line()
-        producer.send(KAFKA_SERVER_LOGS_TOPIC, log_line)
-        producer.flush()
-        print(log_line)
-        time.sleep(1)
+
+def main():
+    args = parse_args()
+    producer = build_text_producer()
+
+    logger.info("Producing server logs to topic: %s", KAFKA_SERVER_LOGS_TOPIC)
+
+    try:
+        sent = 0
+        while args.max_events is None or sent < args.max_events:
+            log_line = generate_log_line()
+            producer.send(KAFKA_SERVER_LOGS_TOPIC, log_line)
+            producer.flush()
+            logger.info("sent log line: %s", log_line)
+            sent += 1
+            time.sleep(args.interval)
+    except KeyboardInterrupt:
+        logger.info("Stopping server log producer on user request.")
+    finally:
+        producer.close()
+
+
+if __name__ == "__main__":
+    main()
