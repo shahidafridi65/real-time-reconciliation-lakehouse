@@ -23,8 +23,8 @@ def test_run_bronze_ingestion_invokes_all_sources(monkeypatch):
             calls.append(("postgres_fetch", table_name, limit))
             return [{"id": 1}]
 
-        def persist_rows(self, table_name, rows, output_dir, bucket_name=None):
-            calls.append(("postgres_persist", table_name, rows, output_dir, bucket_name))
+        def persist_rows(self, table_name, rows, bucket_name=None):
+            calls.append(("postgres_persist", table_name, rows, bucket_name))
             return f"s3://bucket/{table_name}.json"
 
     class FakeShipping:
@@ -32,8 +32,8 @@ def test_run_bronze_ingestion_invokes_all_sources(monkeypatch):
             calls.append(("shipping_fetch",))
             return {"shipments": [{"id": "s-1"}]}
 
-        def persist_payload(self, payload, output_dir, bucket_name=None):
-            calls.append(("shipping_persist", payload, output_dir, bucket_name))
+        def persist_payload(self, payload, bucket_name=None):
+            calls.append(("shipping_persist", payload, bucket_name))
             return "s3://bucket/shipping.json"
 
     fake_kafka = FakeKafka()

@@ -44,7 +44,6 @@ def test_postgres_ingest_can_upload_raw_rows_to_s3(monkeypatch, tmp_path):
     result = postgres_ingest.persist_rows(
         'users',
         [{'id': 1, 'name': 'Ada'}],
-        output_dir=tmp_path,
         bucket_name='demo-bronze-bucket',
     )
 
@@ -66,7 +65,6 @@ def test_shipping_ingest_can_upload_payload_to_s3(monkeypatch, tmp_path):
 
     result = shipping_ingest.persist_payload(
         {'shipments': [{'shipment_id': 's-1', 'order_id': 'o-1', 'status': 'shipped', 'updated_at': '2026-06-11T10:00:00Z'}]},
-        output_dir=tmp_path,
         bucket_name='demo-bronze-bucket',
     )
 

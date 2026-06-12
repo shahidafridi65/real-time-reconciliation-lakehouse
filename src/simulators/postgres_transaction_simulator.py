@@ -38,7 +38,7 @@ def create_new_order(conn):
             "total_amount": total_amount,
             "order_status": "PLACED",
             "payment_status": "PENDING",
-            "order_placed_at": datetime.utcnow()
+            "order_placed_at": datetime.now(timezone.utc)
         })
     
     print(f"[INSERT] order_id={new_order_id}")
