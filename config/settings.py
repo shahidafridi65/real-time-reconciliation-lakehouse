@@ -47,3 +47,10 @@ DATABASE_URL = normalize_database_url(os.getenv("DATABASE_URL"))
 
 MOCK_SHIPPING_API_HOST = (os.getenv("MOCK_SHIPPING_API_HOST", "0.0.0.0") or "0.0.0.0").strip()
 MOCK_SHIPPING_API_PORT = int(os.getenv("MOCK_SHIPPING_API_PORT", "8000") or 8000)
+
+AWS_REGION = (os.getenv("AWS_REGION") or "us-east-1").strip()
+AWS_S3_BUCKET_NAME = (os.getenv("AWS_S3_BUCKET_NAME") or "").strip()
+AWS_S3_PREFIX = (os.getenv("AWS_S3_PREFIX") or "bronze/raw").strip().strip("/")
+AWS_ACCESS_KEY_ID = (os.getenv("AWS_ACCESS_KEY_ID") or "").strip()
+AWS_SECRET_ACCESS_KEY = (os.getenv("AWS_SECRET_ACCESS_KEY") or "").strip()
+AWS_SESSION_TOKEN = (os.getenv("AWS_SESSION_TOKEN") or "").strip()
