@@ -1,0 +1,29 @@
+name: 'real_time_reconciliation'
+version: '1.0.0'
+config-version: 2
+
+# This tells dbt where to find your SQL models
+profile: 'real_time_reconciliation_profile'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  real_time_reconciliation:
+    # Everything in the 'silver' folder will be created as tables in Amazon Redshift Serverless
+    silver:
+      +materialized: table
+      +schema: silver
+    # Everything in the 'gold' folder will be created as tables for BI
+    gold:
+      +materialized: table
+      +schema: gold

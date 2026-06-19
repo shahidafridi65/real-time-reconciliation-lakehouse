@@ -1,0 +1,105 @@
+version: 2
+
+models:
+  - name: gold_order_reconciliation
+    description: "Business reconciliation mart for order, clickstream, payment, and operational drop analysis."
+    columns:
+      - name: reconciliation_id
+        description: "Stable primary key for order-side and purchase-only reconciliation rows."
+        tests:
+          - unique
+          - not_null
+      - name: reconciliation_record_type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['order', 'purchase_without_order']
+      - name: reconciliation_status
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - matched
+                - missing_purchase_event
+                - delayed_purchase_event
+                - payment_not_settled
+                - paid_cancelled_order
+                - gateway_timeout_near_order
+                - purchase_without_order
+      - name: user_id
+        tests:
+          - not_null
+      - name: has_missing_clickstream
+        tests:
+          - not_null
+      - name: has_delayed_clickstream
+        tests:
+          - not_null
+      - name: has_payment_mismatch
+        tests:
+          - not_null
+      - name: has_gateway_timeout
+        tests:
+          - not_null
+
+  - name: gold_logistics_performance
+    description: "Order-level logistics mart for shipment coverage, delivery latency, and SLA performance."
+    columns:
+      - name: logistics_id
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: delivery_tier
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['missing', 'fast', 'standard', 'slow', 'breached']
+      - name: logistics_status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['missing_shipment', 'carrier_delay', 'sla_breach', 'delivered', 'in_progress']
+      - name: missing_shipment
+        tests:
+          - not_null
+      - name: sla_breach
+        tests:
+          - not_null
+
+  - name: gold_shipping_performance
+    description: "Backward-compatible alias for gold_logistics_performance."
+
+  - name: gold_customer_summary
+    description: "Customer summary mart with lifetime value, behavioral activity, payment health, and segmentation."
+    columns:
+      - name: user_id
+        tests:
+          - unique
+          - not_null
+      - name: email
+        tests:
+          - unique
+          - not_null
+      - name: lifetime_spend
+        tests:
+          - not_null
+      - name: total_orders
+        tests:
+          - not_null
+      - name: customer_segment
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['high_value', 'medium_value', 'low_value', 'new']
+      - name: activity_status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['active', 'at_risk', 'churned', 'new']
+
+  - name: gold_dim_customers
+    description: "Backward-compatible alias for gold_customer_summary."

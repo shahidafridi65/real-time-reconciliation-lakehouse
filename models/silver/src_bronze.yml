@@ -1,0 +1,35 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: "{{ env_var('REDSHIFT_DATABASE', 'dev') }}"
+    schema: bronze
+    config:
+      freshness:
+        warn_after:
+          count: 2
+          period: hour
+        error_after:
+          count: 6
+          period: hour
+    tables:
+      - name: orders
+        identifier: order_changes
+        description: "Raw order data from Iceberg tables in S3"
+        loaded_at_field: _ingested_at
+      - name: clickstream_events
+        identifier: clickstream
+        description: "Raw clickstream events"
+        loaded_at_field: _ingested_at
+      - name: server_logs
+        description: "Raw server logs parsed into structured columns"
+        loaded_at_field: _ingested_at
+      - name: shipment_data
+        description: "Raw shipment information from API"
+        loaded_at_field: _ingested_at
+      - name: users
+        description: "Raw user records seeded from PostgreSQL"
+        loaded_at_field: _ingested_at
+      - name: products
+        description: "Raw product catalogue records from PostgreSQL"
+        loaded_at_field: _ingested_at

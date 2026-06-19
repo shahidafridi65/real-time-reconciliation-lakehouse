@@ -1,0 +1,15 @@
+real_time_reconciliation_profile:
+  target: dev
+  outputs:
+    dev:
+      type: redshift
+      host: "{{ env_var('REDSHIFT_HOST') }}"
+      port: "{{ env_var('REDSHIFT_PORT', 5439) | as_number }}"
+      user: "{{ env_var('REDSHIFT_USER') }}"
+      password: "{{ env_var('REDSHIFT_PASSWORD') }}"
+      dbname: "{{ env_var('REDSHIFT_DATABASE', 'dev') }}"
+      schema: silver
+      threads: 4
+      keepalives_idle: 240
+      connect_timeout: 10
+      sslmode: require

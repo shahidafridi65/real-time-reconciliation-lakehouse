@@ -1,0 +1,102 @@
+version: 2
+
+models:
+  - name: silver_orders
+    description: "Standardized order data with deduplicated records."
+    columns:
+      - name: order_id
+        description: "Primary key for the order"
+        tests:
+          - unique
+          - not_null
+      - name: status
+        description: "Standardized lower-case status of the order"
+        tests:
+          - accepted_values:
+              values: ['placed', 'shipped', 'delivered', 'cancelled']
+      - name: payment_status
+        description: "Standardized lower-case payment lifecycle state"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['pending', 'paid', 'failed', 'refunded']
+      - name: total_amount
+        tests:
+          - not_null
+      - name: placed_at
+        tests:
+          - not_null
+      - name: user_id
+        tests:
+          - not_null
+
+  - name: silver_shipping_status
+    description: "Flattened shipment tracking records."
+    columns:
+      - name: tracking_number
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        tests:
+          - not_null
+      - name: status
+        tests:
+          - not_null
+
+  - name: silver_clickstream
+    description: "Cleaned user event stream."
+    columns:
+      - name: event_id
+        tests:
+          - unique
+          - not_null
+      - name: event_type
+        tests:
+          - accepted_values:
+              values: ['home_view', 'search', 'product_view', 'add_to_cart', 'purchase']
+      - name: user_id
+        tests:
+          - not_null
+
+  - name: silver_server_logs
+    description: "Structured and typed server log records."
+    columns:
+      - name: log_timestamp
+        tests:
+          - not_null
+      - name: status_code
+        tests:
+          - not_null
+      - name: service
+        tests:
+          - not_null
+
+  - name: silver_users
+    description: "Cleaned and deduplicated user dimension."
+    columns:
+      - name: user_id
+        tests:
+          - unique
+          - not_null
+      - name: email
+        tests:
+          - unique
+          - not_null
+      - name: country_code
+        tests:
+          - not_null
+
+  - name: silver_products
+    description: "Cleaned and deduplicated product catalogue."
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+      - name: category
+        tests:
+          - not_null
+      - name: price
+        tests:
+          - not_null

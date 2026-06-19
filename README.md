@@ -46,7 +46,7 @@ These sources flow into a centralized lakehouse where raw data is ingested, stan
 | Processing | PySpark Structured Streaming |
 | Storage | AWS S3 |
 | Table Format | Apache Iceberg |
-| Warehouse | Snowflake |
+| Warehouse | Amazon Redshift Serverless |
 | Transformations | dbt |
 | Orchestration | Apache Airflow |
 | Visualization | Power BI / Tableau |
@@ -88,24 +88,36 @@ This starts:
 
 ### 5. Seed the PostgreSQL source database
 ```bash
-python data_generators/postgres_seeder.py
+python src/simulators/postgres_seeder.py
 ```
 
 ### 6. Start the mock shipping API
 ```bash
-python data_generators/shipping_api_mock.py
+python src/simulators/shipping_api_mock.py
 ```
 
 ### 7. Start streaming source generators
 Run these in separate terminals:
 
 ```bash
-python data_generators/clickstream_generator.py
+python src/producers/clickstream_producer.py
 ```
 
 ```bash
-python data_generators/server_log_generator.py
+python src/producers/server_log_producer.py
 ```
+
+## Redshift Serverless migration
+
+Silver and Gold dbt models now target Amazon Redshift Serverless instead of Snowflake. See `docs/redshift_serverless_migration.md` for AWS setup, Redshift external schema bootstrap, dbt commands, validation SQL, and production hardening notes.
+
+## Gold marts and orchestration
+
+Phase 4 Gold marts and Phase 5 validation/orchestration assets are documented in `docs/phase4_phase5_runbook.md`. The Airflow-style DAG is available at `orchestration/airflow/dags/reconciliation_lakehouse_dag.py`.
+
+## Execution guide
+
+Use `docs/project_execution_workflow.md` for the production-ready command sequence, expected outputs, validation SQL, workflow explanation, and architecture diagram.
 
 ## Source systems produced locally
 
